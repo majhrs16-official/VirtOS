@@ -1,0 +1,25 @@
+ap() {
+	hostapd /etc/hostapd.conf
+}
+
+sta() {
+	wpa_supplicant -i $1 -c /etc/wpa_supplicant.conf -D $2
+}
+
+wds() {
+	for iface in $@; do
+		iw dev $iface set 4addr on
+	done
+}
+
+phy() {
+	iw phy phy0 interface add $1 type managed
+}
+
+mcs() {
+	local rate=$1
+	shift
+	for iface in $@; do
+		iw dev $iface set bitrates ht-mcs-2.4 $rate
+	done
+}

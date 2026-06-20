@@ -1,0 +1,81 @@
+forward() {
+	echo 1 > /proc/sys/net/ipv4/ip_forward
+}
+
+bridge() {
+	for iface in "$@"; do
+		ip link add name $iface type bridge
+	done
+}
+
+bridge_mac() {
+	for iface in "$@"; do
+		ip link set dev "$iface" address 52:54:00:$1
+	done
+}
+
+bridge_stp() {
+	for iface in "$@"; do
+		ip link set dev $iface type bridge stp_state 1
+	done
+}
+
+tap() {
+	for iface in "$@"; do
+		ip tuntap add mode tap name $iface
+	done
+}
+
+add() {
+	local main=$1
+	shift
+	for iface in "$@"; do
+		ip link set dev $iface master $main
+	done
+}
+
+gate() {
+	ip route add default via $2 dev $1
+}
+
+ipv4() {
+    local iface=$1
+    shift
+    for addr in "$@"; do
+        ip address add "$addr" dev "$iface"
+    done
+}
+
+up() {
+	for iface in "$@"; do
+		ip link set $iface up
+	done
+}
+
+dhcp() {
+	for iface in "$@"; do
+		udhcpc -i $iface
+	done
+}
+
+dns() {
+	for host in "$@"; do
+		echo nameserver $host
+	done > /etc/resolv.conf
+}
+
+host() {
+	echo "$1" > /proc/sys/kernel/hostname
+}
+
+namespace() {
+    for name in "$@"; do
+        ip netns add "$name"
+    done
+}
+
+with_namespace() {
+    local ns=$1
+    shift
+    ip netns exec "$ns" "$@"
+}

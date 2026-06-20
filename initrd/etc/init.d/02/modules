@@ -1,0 +1,10 @@
+cd /lib/modules/$(uname -r)/kernel
+for kmod in $(cat /etc/kmod/insmod.conf); do
+	printf "[ .... ] Loading $kmod\r"
+	if sudo insmod $kmod; then
+		printf "[  OK  ]\r"
+
+	else
+		printf "[ FAIL ]\n"
+	fi
+done >&2

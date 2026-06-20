@@ -1,0 +1,1 @@
+(cd iso/boot/ && tar cvf - vmlinuz initrd) | tee >(cd /library/srv/www/virtos && tar xvf -) | ssh S7 "cd /srv/www/virtos/ && tar xvf -"

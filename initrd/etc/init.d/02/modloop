@@ -1,0 +1,19 @@
+main() {
+#	wget http://gateway/virtos/modloop.squashfs -O /dev/shm/modloop.squashfs || return 1
+	mount /lib/modules
+
+	for modalias in /sys/bus/*/devices/*/modalias; do
+		if [ -e "$modalias" ]; then
+			alias=$(cat $modalias)
+			printf "[ .... ] Loading %s                                         \r" $alias
+			if sudo modprobe -abq $alias; then
+				printf "[  OK  ]\r"
+
+			else
+				printf "[ FAIL ]\n"
+			fi
+		fi
+	done
+}
+
+main >&2

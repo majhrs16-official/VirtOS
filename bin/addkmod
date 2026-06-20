@@ -1,0 +1,1 @@
+(cd lib/*/kernel && tar cvf - "$@") | (cd initrd/lib/modules/*/kernel && tar xvf -)

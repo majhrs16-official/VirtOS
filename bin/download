@@ -1,0 +1,15 @@
+wget -c https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/$1/alpine-standard-3.24.1-$1.iso -O tmp/alpine.iso || exit 1
+mkdir -p tmp/alpine/ tmp/initrd/ tmp/modloop/
+mount tmp/alpine.iso tmp/iso
+
+cp tmp/iso/boot/vmlinuz-lts tmp/vmlinuz &
+zcat tmp/iso/boot/initramfs-lts | cpio -idmv -D tmp/initrd &
+unsquashfs -f -d tmp/modloop -info tmp/iso/boot/modloop-lts &
+wait
+
+cp -v tmp/iso/boot/syslinux/isolinux.bin iso/boot/isolinux/
+cp -v tmp/iso/boot/syslinux/ldlinux.c32  iso/boot/isolinux/
+
+while ! umount tmp/iso; do
+	sleep 1
+done

@@ -1,0 +1,8 @@
+bin/download x86_64
+bin/patch
+bin/mkinit
+bin/mkmod
+cat tmp/modloop tmp/rootfs > iso/boot/initrd # | zstd -19 # -printf "%P\n"
+bin/push
+bin/mkiso
+$(bin/qemu)

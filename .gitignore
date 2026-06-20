@@ -1,0 +1,15 @@
+.git/
+tmp/*
+var/cdrom/*
+!tmp/.gitkeep
+!var/cdrom/.gitkeep
+!iso/boot/isolinux/isolinux.cfg
+!*/.gitkeep
+initrd/dev/*
+initrd/etc/apk/keys/*
+initrd/bin/busybox
+initrd/bin/apk
+initrd/lib/*.so*
+initrd/lib/modules/*
+initrd/lib/firmware/*
+*.log

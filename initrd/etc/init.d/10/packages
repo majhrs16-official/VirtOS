@@ -1,0 +1,10 @@
+apk update  > /dev/null 2>&1
+for package in $(cat /etc/apk/packages); do
+	printf "L [ .... ] Installing %s\r" "$package"
+	if apk --allow-untrusted add $package > /dev/null 2>&1; then
+		printf "L [  OK  ]\r"
+
+	else
+		printf "L [ FAIL ]\n"
+	fi
+done >&2

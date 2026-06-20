@@ -1,0 +1,4 @@
+devpts				/dev/pts	devpts		rw,noexec,gid=5,mode=620,noatime	0	0
+sysfs				/sys		sysfs		rw,noexec,nodev,noatime			0	0
+proc				/proc		proc		rw,noexec,nodev,noatime			0	0
+/dev/shm/modloop.squashfs	/lib/modules	squashfs	ro,loop,noauto,noatime			0	0

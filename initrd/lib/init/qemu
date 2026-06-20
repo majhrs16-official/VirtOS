@@ -1,0 +1,57 @@
+#!/bin/bash
+
+arch() {
+	echo "qemu-system-$1"
+}
+
+accel() {
+	echo "-accel $1"
+}
+
+chipset() {
+	echo "-M $1"
+}
+
+cpu() {
+	echo "-cpu $1"
+}
+
+cores() {
+	echo "-smp $1"
+}
+
+mem() {
+	echo "-m $1"
+}
+
+net() {
+	echo "-netdev tap,id=net0,ifname=$1,script=no,downscript=no -device virtio-net-pci,netdev=net0"
+}
+
+disk() {
+	echo "-drive file=$1,if=virtio,format=raw,cache=none"
+}
+
+cdrom() {
+	echo "-drive file=$1,if=virtio,media=cdrom,cache=unsafe"
+}
+
+display() {
+	echo "-display $1"
+}
+
+display_driver() {
+	echo "-vga $1"
+}
+
+vnc() {
+	echo "-vnc $1"
+}
+
+spice() {
+	echo "-spice port=$1,disable-ticketing"
+}
+
+bootmenu() {
+	echo "-boot menu=on"
+}

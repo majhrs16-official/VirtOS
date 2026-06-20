@@ -1,0 +1,49 @@
+#! /bin/busybox sh
+
+esc=$'\033'
+clearline="$esc[K"
+reset="$esc[0m"
+red="$esc[0;31m"
+green="$esc[0;32m"
+yellow="$esc[0;33m"
+blue="$esc[0;34m"
+
+debug() {
+	/bin/busybox mount /proc
+	if /bin/busybox grep -q "debug" /proc/cmdline; then
+		set -x
+	fi
+	/bin/busybox umount /proc
+}
+
+run() {
+	local level="$1"
+	local service="$2"
+
+	printf "${clearline}${reset}[ ${yellow}....${reset} ] ${yellow}%s${reset}-${green}%s${reset}\r" "$level" "$service"
+	if $(./$service); then
+		/bin/busybox printf "${reset}[  ${green}OK${reset}  ]\r"
+
+	else
+		/bin/busybox printf "${reset}[ ${red}FAIL${reset} ]\n"
+	fi
+}
+
+main() {
+	debug
+
+	root=/
+	[ -f $root/etc/profile ] && source $root/etc/profile
+	for level in $root/etc/init.d/*; do
+		[ -d "$level" ] || continue
+		cd "$level" || continue
+		for service in *; do
+			[ -x "$service" ] || continue
+			run "$(basename $level)" "$service" &
+		done
+		wait
+	done
+	echo
+}
+
+main $@ 2>&1 | /bin/busybox tee /var/log/boot.log

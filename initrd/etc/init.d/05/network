@@ -1,0 +1,11 @@
+source /lib/init/network
+
+forward
+host $(cat /etc/hostname)
+
+bridge lan
+add    lan eth0
+ipv4   lan 192.168.0.100/24
+dns    8.8.8.8
+up     eth0 lan
+gate   lan 192.168.0.254

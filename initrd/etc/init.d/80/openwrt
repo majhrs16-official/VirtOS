@@ -1,0 +1,14 @@
+source /lib/init/qemu
+
+arch    x86_64
+accel   kvm
+chipset q35
+cpu     max
+cores   2
+mem     128M
+disk    /dev/sda
+cdrom   /media/nfs/openwrt.iso
+net     lan0
+display none
+gpu     virtio
+vnc     :0

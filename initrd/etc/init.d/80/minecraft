@@ -1,0 +1,14 @@
+source /lib/init/qemu
+
+arch    x86_64
+accel   kvm
+chipset q35
+cpu     max
+cores   4
+mem     4G
+disk    /dev/sdb
+cdrom   /media/nfs/alpine.iso
+net     lan1
+display none
+gpu     virtio
+vnc     :1

@@ -1,0 +1,4 @@
+cd lib
+squash=dev/shm/modloop.squashfs
+[ ! -f "$squash" ] && mksquashfs modules "$squash" -comp zstd -Xcompression-level 22 -noappend
+find "$squash" | cpio -H newc -v -o > ../tmp/modloop

@@ -1,0 +1,9 @@
+for kmod in $(find initrd/lib/modules/*/kernel/ -name "*.ko"); do
+	deps=$(modinfo -F depends $kmod)
+	if [ -z "$deps" ]; then
+		echo "$(basename $kmod) es independiente."
+
+	else
+		echo "$(basename $kmod) depende de: $deps"
+	fi
+done

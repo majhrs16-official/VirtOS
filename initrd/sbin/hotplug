@@ -1,0 +1,44 @@
+#!/bin/sh
+LOG_FILE="/var/log/hotplug.log"
+touch "$LOG_FILE" 2>/dev/null
+
+main() {
+    DEVNAME=$(basename "$DEVPATH")
+    DEV_POINT="/dev/$DEVNAME"
+    MOUNT_POINT="/media/$DEVNAME"
+
+    echo "[$(date '+%d/%m/%Y %H:%M:%S')] action=$ACTION,subsystem=$SUBSYSTEM,devpath=$DEVPATH"
+    case "$ACTION_$SUBSYSTEM_$DEVPATH" in
+        add_block_*)
+			if ! echo "$DEVPATH" | grep -q '[0-9]$'; then
+				return
+			fi
+
+            echo "--> Dispositivo conectado: $DEV_POINT"
+            mkdir -p "$MOUNT_POINT"
+
+            if mount "$DEV_POINT" "$MOUNT_POINT"; then
+                echo "    Montado con exito en $MOUNT_POINT"
+
+            else
+                echo "    Error al intentar montar $DEV_POINT"
+                rmdir "$MOUNT_POINT"
+            fi
+        ;;
+
+        remove_block_*)
+			if ! echo "$DEVPATH" | grep -q '[0-9]$'; then
+				return
+			fi
+
+            echo "--> Dispositivo desconectado: $DEV_POINT"
+            if [ -d "$MOUNT_POINT" ]; then
+                umount -l "$MOUNT_POINT"
+                rmdir "$MOUNT_POINT"
+                echo "    Punto de montaje $MOUNT_POINT removido."
+            fi
+        ;;
+    esac
+}
+
+main "$@" >> "$LOG_FILE" 2>&1

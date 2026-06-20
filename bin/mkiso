@@ -1,0 +1,8 @@
+mkisofs -o var/cdrom/virtos.iso \
+	-R -J -iso-level 3 \
+	-b boot/isolinux/isolinux.bin \
+	-c boot/isolinux/boot.cat \
+	-no-emul-boot -boot-load-size 4 -boot-info-table \
+	-input-charset utf-8 \
+	iso
+isohybrid var/cdrom/virtos.iso

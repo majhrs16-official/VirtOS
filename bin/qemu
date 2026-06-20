@@ -1,0 +1,12 @@
+source /library/lib/init/qemu
+
+arch    x86_64
+accel   tcg
+chipset q35
+cpu     Penryn
+cores   2
+mem     1G
+cdrom   var/cdrom/virtos.iso
+net     tap0
+echo    "-display gtk -vga qxl"
+#echo   "-icount shift=7,align=on,sleep=on"
