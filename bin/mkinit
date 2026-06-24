@@ -1,2 +1,2 @@
 cd initrd
-find . | cpio -H newc -v -o > ../tmp/rootfs
+find . | cpio -H newc -v -o > ../iso/boot/initrd

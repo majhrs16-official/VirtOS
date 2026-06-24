@@ -1,15 +1,73 @@
-wget -c https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/$1/alpine-standard-3.24.1-$1.iso -O tmp/alpine.iso || exit 1
-mkdir -p tmp/alpine/ tmp/initrd/ tmp/modloop/
-mount tmp/alpine.iso tmp/iso
+echo Downloading Alpine ISO ...
+	if ! wget -c https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/$1/alpine-standard-3.24.1-$1.iso -O tmp/alpine.iso; then
+		exit 1
+	fi
+echo Downloading Alpine ISO ... Done
 
-cp tmp/iso/boot/vmlinuz-lts tmp/vmlinuz &
-zcat tmp/iso/boot/initramfs-lts | cpio -idmv -D tmp/initrd &
-unsquashfs -f -d tmp/modloop -info tmp/iso/boot/modloop-lts &
-wait
+echo Mounting Alpine ISO ...
+	mkdir -p tmp/iso/ tmp/initrd/ tmp/lib/
+	mount tmp/alpine.iso tmp/iso
+echo Mounting Alpine ISO ... Done
 
-cp -v tmp/iso/boot/syslinux/isolinux.bin iso/boot/isolinux/
-cp -v tmp/iso/boot/syslinux/ldlinux.c32  iso/boot/isolinux/
+echo Extract InitRAM and ModLoop of Alpine ISO ...
+	zcat tmp/iso/boot/initramfs-lts | cpio -idmv -D tmp/initrd &
+	unsquashfs -f -d tmp/lib -info tmp/iso/boot/modloop-lts &
+	wait
+echo Extract InitRAM and ModLoop of Alpine ISO ... Done
 
-while ! umount tmp/iso; do
-	sleep 1
-done
+echo Copy components of Alpine ISO ...
+	cp -v  tmp/iso/boot/vmlinuz-lts                         iso/boot/vmlinuz
+	cp -v  tmp/iso/boot/syslinux/isolinux.bin               iso/boot/isolinux/
+	cp -v  tmp/iso/boot/syslinux/ldlinux.c32                iso/boot/isolinux/
+	cp -vr tmp/lib/modules/*                                lib/modules
+	cp -vr tmp/initrd/etc/apk/keys/                         initrd/etc/apk/
+	cp -v  tmp/initrd/usr/bin/busybox                       initrd/bin/busybox
+	cp -v  tmp/initrd/usr/sbin/apk                          initrd/bin/apk
+	cp -v  tmp/initrd/usr/lib/*.so*                         initrd/lib/
+echo Copy components of Alpine ISO ... Done
+
+echo Copy primary drivers ...
+	bin/addkmod 6.18.35-0-lts drivers/block/loop.ko fs/squashfs/squashfs.ko
+echo Copy primary drivers ... Done
+
+echo Unmounting Alpine ISO ...
+	while ! umount tmp/iso; do
+		echo "  Retrying on 1 second ..."
+		sleep 1
+	done
+echo Unmounting Alpine ISO ... Done.
+
+echo Make /dev/ nodes ...
+cd initrd/dev
+	mkdir -p input
+	mkdir -p net
+	mkdir -p pts
+	mkdir -p shm
+	chmod 755 pts
+	chmod 755 shm
+
+	mknod -m 600 console      c 5  1
+	mknod -m 644 fb0          c 29 0
+	mknod -m 644 kvm          c 10 232
+	mknod -m 666 null         c 1  3
+	mknod -m 666 ptmx         c 5  2
+	mknod -m 644 random       c 1  8
+	mknod -m 644 sr0          c 11 0
+	mknod -m 666 tty          c 5  0
+	mknod -m 644 tty0         c 4  0
+	mknod -m 666 tty1         c 4  1
+	mknod -m 666 tty2         c 4  2
+	mknod -m 644 ttyS0        c 4  0
+	mknod -m 644 urandom      c 1  9
+	mknod -m 666 zero         c 1  5
+	mknod -m 644 initrd       b 1  250
+	mknod -m 660 loop0        b 7  0
+	mknod -m 644 ram0         b 1  0
+	mknod -m 660 sda          b 8  0
+	mknod -m 660 sda1         b 8  1
+	mknod -m 660 sda2         b 8  2
+	mknod -m 660 input/event0 c 13 64
+	mknod -m 660 input/event1 c 13 65
+	mknod -m 660 input/mice   c 13 63
+	mknod -m 666 net/tun      c 10 200
+echo Make /dev/ nodes ... Done

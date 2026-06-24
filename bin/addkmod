@@ -1,1 +1,4 @@
-(cd lib/*/kernel && tar cvf - "$@") | (cd initrd/lib/modules/*/kernel && tar xvf -)
+kernel=$1
+shift
+mkdir -p lib/modules/$kernel/kernel initrd/lib/modules/$kernel/kernel
+(cd lib/modules/$kernel/kernel && tar cvf - "$@") | (cd initrd/lib/modules/$kernel/kernel && tar xvf -)
